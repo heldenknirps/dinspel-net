@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PQ TLS Handshake config</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="layout-wrapper">
+        
+        <div class="selection-panel">
+            <h2>Setup</h2>
+
+            <div class="form-group">
+                <label for="inputA">PKI Scheme</label>
+                <div class="custom-dropdown">
+                    <input type="text" id="inputA" placeholder="Select Scheme..." autocomplete="off">
+                    <div id="listA" class="dropdown-options"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="inputA1">Parameterset</label>
+                <div class="custom-dropdown">
+                    <input type="text" id="inputA1" placeholder="Select scheme first.." disabled autocomplete="off">
+                    <div id="listA1" class="dropdown-options"></div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="form-group">
+                <label for="inputB">Signature Scheme</label>
+                <div class="custom-dropdown">
+                    <input type="text" id="inputB" placeholder="Select Scheme..." autocomplete="off">
+                    <div id="listB" class="dropdown-options"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="inputC">Parameterset</label>
+                <div class="custom-dropdown">
+                    <input type="text" id="inputC" placeholder="Select scheme first.." disabled autocomplete="off">
+                    <div id="listC" class="dropdown-options"></div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="checkD">
+                    <label for="checkD">Add ocsp stapeling?</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="checkE">
+                    <label for="checkE">Add certificate timestamps?</label>
+                    <input type="number" id="inputSctCount" value="3" min="1" class="tiny-input hidden" title="Anzahl der Timestamps">
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="checkF">
+                    <label for="checkF">Encrypt public key?</label>
+                </div>
+            </div>
+
+            <button id="addBtn" class="btn-primary">Show config</button>
+        </div>
+
+        <div class="results-panel">
+            
+            <div id="result-box" class="result-container hidden">
+                <h3>Compare (Last 2 Sets)</h3>
+                <div id="result-content" class="comparison-grid"></div>
+            </div>
+            
+            <div id="empty-state" class="empty-state">
+                <p>The last two created configurations will be shown here</p>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script src="files/pki_schemes.js"></script>
+<script src="files/pki_params.js"></script>
+<script src="files/schemes.js"></script>
+<script src="files/parametersets.js"></script>
+
+<script src="scripts/script.js"></script>
+
+</body>
+</html>
