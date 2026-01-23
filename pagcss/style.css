@@ -1,0 +1,315 @@
+/* --- GRUNDLEGENDE FARBPALETTE (Dark Mode) --- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #121212;
+    color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+.container {
+    background: #1e1e1e;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 1200px;
+    border: 1px solid #333;
+}
+
+.layout-wrapper {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+/* LINKS: Auswahl */
+.selection-panel {
+    flex: 0 0 350px;
+    min-width: 300px;
+    padding-right: 20px;
+    border-right: 1px solid #333;
+}
+
+@media (max-width: 800px) {
+    .selection-panel {
+        flex: 100%;
+        border-right: none;
+        border-bottom: 1px solid #333;
+        padding-bottom: 30px;
+        margin-bottom: 30px;
+    }
+}
+
+/* RECHTS: Ergebnisse */
+.results-panel {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+h2 {
+    margin-top: 0;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+    position: relative; /* Wichtig für Dropdown Positionierung */
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #c0c0c0;
+}
+
+/* --- NEU: Custom Dropdown Styling --- */
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #444;
+    background: #2d2d2d;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus {
+    background: #363636;
+    border-color: #007bff;
+    outline: none;
+}
+
+input:disabled {
+    background-color: #333;
+    color: #777;
+    border-color: #444;
+    cursor: not-allowed;
+}
+
+/* Die Liste, die aufklappt */
+.dropdown-options {
+    position: absolute;
+    top: 105%; /* Ein kleines Stück unter dem Input */
+    left: 0;
+    right: 0;
+    background: #252526;
+    border: 1px solid #444;
+    border-radius: 6px;
+    max-height: 250px; /* Scrollbar ab hier */
+    overflow-y: auto;
+    z-index: 1000;
+    display: none; /* Standardmäßig unsichtbar */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.dropdown-options.show {
+    display: block;
+}
+
+/* Einzelner Eintrag in der Liste */
+.dropdown-option {
+    padding: 10px 12px;
+    cursor: pointer;
+    color: #e0e0e0;
+    border-bottom: 1px solid #333;
+    transition: background 0.1s;
+}
+
+.dropdown-option:last-child {
+    border-bottom: none;
+}
+
+.dropdown-option:hover {
+    background-color: #007bff;
+    color: white;
+}
+/* ------------------------------------- */
+
+hr {
+    border: 0;
+    height: 1px;
+    background: #333;
+    margin: 1.5rem 0;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.checkbox-item input {
+    margin-right: 12px;
+    transform: scale(1.1);
+    accent-color: #007bff;
+}
+
+.checkbox-item label {
+    font-weight: normal;
+    margin: 0;
+    cursor: pointer;
+    color: #a0a0a0;
+}
+
+.btn-primary {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    margin-top: 25px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+/* Ergebnis Container */
+.result-container {
+    border-radius: 8px;
+    height: 100%;
+}
+
+.result-container.hidden {
+    display: none;
+}
+
+.result-container h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #ffffff;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.comparison-grid {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.set-wrapper {
+    flex: 1;
+    background: #252526;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.set-wrapper:hover {
+    border-color: #007bff;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.set-wrapper:last-child {
+    border-top: 4px solid #007bff;
+}
+
+.set-header {
+    font-weight: 800;
+    color: #888;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #3a3a3a;
+    padding-bottom: 8px;
+}
+
+.result-section {
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+
+.result-section strong {
+    display: block;
+    color: #fff;
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+
+.result-line {
+    margin-left: 0;
+    padding-left: 10px;
+    border-left: 2px solid #444;
+    line-height: 1.5;
+    color: #ccc;
+}
+
+.result-line b {
+    color: #fff;
+}
+
+.result-line a {
+    color: #4da3ff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.result-line a:hover {
+    text-decoration: underline;
+}
+
+.empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #888;
+    text-align: center;
+    border: 2px dashed #444;
+    border-radius: 12px;
+    padding: 40px;
+    min-height: 200px;
+}
+
+.tiny-input {
+    width: 60px;
+    margin-left: 15px;
+    padding: 6px;
+    border: 1px solid #444;
+    background: #2d2d2d;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+/* Utility Class zum Verstecken */
+.hidden {
+    display: none !important;
+}
