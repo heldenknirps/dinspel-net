@@ -1,0 +1,20 @@
+const rawPKIparams = `
+Scheme,Parameterset,sk,pk,ct,nist-sec-level,kem, link
+KYBER,512,1632,800,768,1,1,""
+KYBER,512-90s,1632,800,768,1,1,""
+KYBER,768,2400,1184,1088,3,1,""
+KYBER,768-90s,2400,1184,1088,3,1,""
+KYBER,1024,3168,1568,1568,5,1,""
+KYBER,1024-90s,3168,1568,5,1,""
+HQC,128,2305,2249,4497,1,1,""
+HQC,192,4586,4522,9042,3,1,""
+HQC,256,7317,7245,14485,5,1,""
+ECDHE,X25519,32,32,,classic,0,""
+ECDHE,X448,56,56,,classic,0,""
+ECDHE,secp256r1,65,32,,classic,0,""
+ECDHE,secp384r1,97,48,,classic,0,""
+ECDHE,secp512r1,133,66,,classic,0,""
+FFDHE,ffdhe2048,256,256,,classic,0,""
+FFDHE,ffdhe3072,384,384,,classic,0,""
+FFDHE,ffdhe4096,512,512,,classic,0,""
+`;
