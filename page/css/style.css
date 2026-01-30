@@ -313,3 +313,52 @@ hr {
 .hidden {
     display: none !important;
 }
+
+/* --- Bestehendes CSS ergänzen/ändern --- */
+.columns-wrapper {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start; /* Wichtig: Spalten richten sich oben aus */
+}
+
+.config-column {
+    flex: 1; /* Beide Spalten nehmen gleich viel Platz ein */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Abstand zwischen den Karten in einer Spalte */
+}
+
+/* Responsiv: Auf schmalen Bildschirmen untereinander */
+@media (max-width: 900px) {
+    .columns-wrapper {
+        flex-direction: column;
+    }
+}
+
+/* Design der Karte bleibt gleich */
+.set-wrapper {
+    background: #252526;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.set-summary {
+    padding: 12px 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2d2d2d;
+}
+
+.set-details {
+    display: none; /* Standardmäßig eingeklappt */
+    padding: 15px;
+    background: #1e1e1e;
+}
+
+.set-wrapper.is-expanded .set-details {
+    display: block;
+}

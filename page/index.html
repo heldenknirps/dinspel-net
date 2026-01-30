@@ -15,7 +15,7 @@
             <h2>Setup</h2>
 
             <div class="form-group">
-                <label for="inputA">Key Exchange</label>
+                <label for="inputA">PKI Scheme</label>
                 <div class="custom-dropdown">
                     <input type="text" id="inputA" placeholder="Select Scheme..." autocomplete="off">
                     <div id="listA" class="dropdown-options"></div>
@@ -72,8 +72,11 @@
         <div class="results-panel">
             
             <div id="result-box" class="result-container hidden">
-                <h3>Compare (Last 2 Sets)</h3>
-                <div id="result-content" class="comparison-grid"></div>
+                <h3>Compare</h3>
+                <div id="result-content" class="columns-wrapper">
+                    <div id="col-left" class="config-column"></div>
+                    <div id="col-right" class="config-column"></div>
+                </div>
             </div>
             
             <div id="empty-state" class="empty-state">

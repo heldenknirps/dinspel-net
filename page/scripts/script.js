@@ -231,9 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // add to history, limit size
         configHistory.push(newSet);
-        if (configHistory.length > 2) {
-            configHistory.shift(); 
-        }
 
         renderHistory();
 
@@ -263,12 +260,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         emptyState.style.display = 'none';
         resultBox.classList.remove('hidden');
-        resultContent.innerHTML = "";
+
+        const colLeft = document.getElementById('col-left');
+        const colRight = document.getElementById('col-right');
+
+        colLeft.innerHTML = "";
+        colRight.innerHTML = "";
         
         configHistory.forEach((set, index) => {
             const wrapper = document.createElement('div');
             wrapper.className = 'set-wrapper';
-            let html = `<div class="set-header">Configuration ${index + 1}</div>`;
+            // let html = `<div class="set-header">Configuration ${index + 1}</div>`;
 
             // get data from set
             const { rowA, rowA1, rowB, rowC, useOcsp, useSct, sctCount, useEncPk } = set;
@@ -276,8 +278,30 @@ document.addEventListener('DOMContentLoaded', () => {
             // Berechne Zusatz-Bytes
             const ocspBytes = useOcsp ? OCSP_SIZE : 0;
             const sctBytes = useSct ? (sigSize * sctCount) : 0;
+            
+            // gesamtsumme berechnen
+            if (rowA1 && rowA1.kem == '1') { useKEM = true}
+            if (rowA1 && rowA1.kem == '0') { useKEM = false}
 
-            var totalSum = parseInt(0)
+            const ctSize = parseInt(rowA1.ct) || 0;
+            const pkSize = parseInt(rowA1.pk) || 0;
+
+            const sigSize = rowC ? (parseInt(rowC['sig size']) || 0) : 0;
+
+            var totalSum = (useEncPk ? 2*pkSize : pkSize) + ocspBytes + sctBytes + (useKEM ? ctSize : pkSize) + sigSize;
+
+            // Titel erstellen 
+
+            const title = (rowA && rowA1 ? rowA.Scheme : "") +  ((rowA && rowA1) && (rowB && rowC) ? " + " : "") + (rowB && rowC ? rowB.Scheme : "");
+
+            // header
+            let html = `
+                <div class="set-summary">
+                    <span class="set-title">${title}</span>
+                    <span class="set-total-badge">${totalSum} Bytes</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="set-details">`;
 
             // PKI
             if (rowA && rowA1) {
@@ -310,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <strong>Client Hello:</strong>
                     <div class="result-line">Public Key Size${useEncPk ?' (encrypted): ' +  2*rowA1.pk:': ' + rowA1.pk} byte</div>
                 </div>`;
-                totalSum += parseInt(useEncPk ? 2*rowA1.pk : rowA1.pk)
+                //totalSum += parseInt(useEncPk ? 2*rowA1.pk : rowA1.pk)
             }
 
             // Server Hello
@@ -324,15 +348,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if (useSct) {
                     lines += `<div class="result-line">Certificate timestamps(${sctCount}): ${sctBytes} bytes</div>`;
-                    totalSum += parseInt(sctBytes)
+                    //totalSum += parseInt(sctBytes)
                 }
                 return lines;
             }
 
             // KEM
             if (rowA1 && rowA1.kem == '1') {
-                const ctSize = parseInt(rowA1.ct) || 0;
-                const sigSize = rowC ? (parseInt(rowC['sig size']) || 0) : 0;
+                //const ctSize = parseInt(rowA1.ct) || 0;
+                //const sigSize = rowC ? (parseInt(rowC['sig size']) || 0) : 0;
                 
                 // Total size
                 const total = ctSize + sigSize + ocspBytes + sctBytes;
@@ -345,13 +369,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${getOptionalLines()}
                     <div class="result-line"><b>Total: ${total} bytes</b></div>
                 </div>`;
-                totalSum += parseInt(total)
+                //totalSum += parseInt(total)
             }
             
             // Public Key
             if (rowA1 && rowA1.kem == '0') {
-                const pkSize = parseInt(rowA1.pk) || 0;
-                const sigSize = rowC ? (parseInt(rowC['sig size']) || 0) : 0;
+                //const pkSize = parseInt(rowA1.pk) || 0;
+                //const sigSize = rowC ? (parseInt(rowC['sig size']) || 0) : 0;
                 
                 // Total size
                 const total = pkSize + sigSize + ocspBytes + sctBytes;
@@ -364,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${getOptionalLines()}
                     <div class="result-line"><b>Total: ${total} bytes</b></div>
                 </div>`;
-                totalSum += parseInt(total)
+                //totalSum += parseInt(total)
             }
 
              //calculate total size
@@ -379,7 +403,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             wrapper.innerHTML = html;
-            resultContent.appendChild(wrapper);
+
+            wrapper.querySelector('.set-summary').addEventListener('click', () => {
+                wrapper.classList.toggle('is-expanded');
+            });
+
+            if (index % 2 === 0) {
+            colLeft.appendChild(wrapper);
+        } else {
+            colRight.appendChild(wrapper);
+        }
         });
     }
 });
