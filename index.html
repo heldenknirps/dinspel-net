@@ -3,120 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PQ TLS Handshake Configurator</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Comparing Post-Quantum Instantiations of the TLS1.3 
+Handshake</title>
+    <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
 
-<div class="container">
-    <div class="layout-wrapper">
+    <header>
+        <h1>Comparing Post-Quantum Instantiations of the TLS1.3 
+Handshake</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#thesis">Thesis</a></li>
+            <li><a href="#projectIframe">Projekt</a></li>
+            <li><a href="#proposal">Proposal</a></li>
+
+            </ul>
+    </nav>
+
+    <main>
         
-        <div class="selection-panel">
-            <h2>Handshake Setup</h2>
-
-            <div class="form-group">
-                <label for="inputA" id="labelA">Key Exchange</label>
-                <div class="custom-dropdown">
-                    <input type="text" id="inputA" placeholder="Select Scheme..." autocomplete="off">
-                    <div id="listA" class="dropdown-options"></div>
-                </div>
+        <section id="thesis">
+            <h2>Thesis</h2>
+            <div class="pdf-container">
+                <iframe src="thesis.pdf" width="100%" height="600px"></iframe>
             </div>
+        </section>
 
-            <div class="form-group">
-                <label for="inputA1">Parameterset</label>
-                <div class="custom-dropdown">
-                    <input type="text" id="inputA1" placeholder="Select scheme first.." disabled autocomplete="off">
-                    <div id="listA1" class="dropdown-options"></div>
-                </div>
+        <section id="projectIframe">
+            <h2>Calculator</h2>
+            <div>
+                <p>
+    This calculator gives you the ability to compare the size of cryptographic objects exchanged within the TLS 1.3 handshake. This includes the key exchange, signatures and <a ref="https://de.wikipedia.org/wiki/Online_Certificate_Status_Protocol_stapling">OCSP-stapling</a>, <a ref="">Encrypted Client Hello</a>, and <a ref="">Certificate Transparency</a>. The key exchange offers a wide variety of schemes from classical and post-quantum cryptography, as well as hybrid key exchange, which can be freely configured from offered PKI and KEM schemes. Available signature schemes are sourced from the <a ref="">PQ-Zoo</a>; project's GitHub page.
+</p>
+<p>
+    <strong>Creating a configuration:</strong>
+</p>
+<ol>
+    <li data-list-item-id="e36f1dbbe35f7e0fcc326480517f20f92">
+        Select how the key-exchange is handled. All available schemes are within the upper dropdown. Once a scheme is selected, the desired parameters can be selected from the second dropdown. If hybrid key exchange is enabled, there will be two sets of dropdowns instead. The upper set defines the used KEM, the lower set defines the used PKI.
+    </li>
+    <li data-list-item-id="e65791b08543d532387d8a968c77f03b4">
+        Select the signature algorithm. The upper dropdown again includes a list of available schemes, the lower one the possible parameters.
+    </li>
+    <li data-list-item-id="e485822485b6a98cebb3e4fad480b4eb1">
+        Additional extensions can be toggled on and off. If Certificate Transparency is enabled, the length of its backlog can be set (and in the future which certificate is used, but that is not implemented yet)
+    </li>
+    <li data-list-item-id="ee208d289e84c4c4a0d3183896c600545">
+        Done! By clicking on “show config”, the created config will be added to the list of comparable configurations.
+    </li>
+</ol>
+<p>
+    <strong>Viewing configurations:</strong>
+</p>
+<p>
+    Each created config will be added to the list on the ride hand side of the calculator. It is identified by the schemes used for key-exchange and creating the signature. The total size of transmitted crypto objects will also be visible. Configs can be expanded by clicking on them, revealing details of the selected components. These include:&nbsp;
+</p>
+<ol>
+    <li data-list-item-id="ec12d8ae7d7c310114f9f2e7d9697e94b">
+        The selected key-exchange scheme(s) name, which is a link to some external side with additional information about each scheme, the selected parameters and the corresponding NIST-Level&nbsp;
+    </li>
+    <li data-list-item-id="e6dfc5698b59fa34743231483bc6291d1">
+        The selected signature scheme's name, which is a link to some external website with additional information about each scheme, the selected parameters and the corresponding NIST-Level
+    </li>
+    <li data-list-item-id="e81db5cae8edf5683f14e1e0ac9662060">
+        Client Hello with the size and type of each transmitted crypto object as well as the total size of all crypto objects within the client hello message.
+    </li>
+    <li data-list-item-id="ebd1c061887b77fa65c1a6f696c755f2b">
+        Server Hello with the size and type of each transmitted crypto object as well as the total size of all crypto objects within the server hello message.
+    </li>
+    <li data-list-item-id="e397c0f26a04d36a3e78b6e0fd28a2d8b">
+        The combined size of all transmitted crypto objects during the handshake
+    </li>
+</ol>
+<p>
+    <strong>Whats next?</strong>
+</p>
+<p>
+    Some features are not yet implemented. These include:
+</p>
+<ul>
+    <li data-list-item-id="e326cc2e74db4a16bc426a19db574fbb2">
+        Selecting which certificate is used with Certificate Transparency
+    </li>
+    <li data-list-item-id="e511b6237cff2b42452a95966fa399332">
+        Ability to delete created configurations — as for now, only reloading the page removes all created configs
+    </li>
+    <li data-list-item-id="ed9569d073d2361be38f49554e51bda69">
+        Importing and exporting created configurations
+    </li>
+</ul>
             </div>
-
-            <div class="checkbox-group" style="margin-bottom: 1.2rem;">
-                <div class="checkbox-item">
-                    <input type="checkbox" id="checkHybrid">
-                    <label for="checkHybrid">Use hybrid</label>
-                </div>
+            <div>
+                <iframe src="/page/index.html" width="100%" height="860"></iframe>
             </div>
-
-            <div id="hybrid-inputs" class="hidden">
-                <div class="form-group">
-                    <label for="inputA2">Key Exchange - PKI</label>
-                    <div class="custom-dropdown">
-                        <input type="text" id="inputA2" placeholder="Select Scheme..." autocomplete="off">
-                        <div id="listA2" class="dropdown-options"></div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="inputA2_1">Parameterset</label>
-                    <div class="custom-dropdown">
-                        <input type="text" id="inputA2_1" placeholder="Select scheme first.." disabled autocomplete="off">
-                        <div id="listA2_1" class="dropdown-options"></div>
-                    </div>
-                </div>
+        </section>
+        
+        <section id="proposal">
+            <h2>Proposal</h2>
+            <p>Freshly compiled ;)</p>
+            <div class="pdf-container">
+                <iframe src="proposal.pdf" width="100%" height="600px"></iframe>
             </div>
+        </section>
+<!--
+        <section id="quellen">
+            <h2>Quellen</h2>
+            <p>Das is mein whiteboard</p>
+        </section>
+-->
+        </main>
 
-            <hr>
-
-            <div class="form-group">
-                <label for="inputB">Signature Scheme</label>
-                <div class="custom-dropdown">
-                    <input type="text" id="inputB" placeholder="Select Scheme..." autocomplete="off">
-                    <div id="listB" class="dropdown-options"></div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="inputC">Parameterset</label>
-                <div class="custom-dropdown">
-                    <input type="text" id="inputC" placeholder="Select scheme first.." disabled autocomplete="off">
-                    <div id="listC" class="dropdown-options"></div>
-                </div>
-            </div>
-
-            <hr>
-
-            <div class="checkbox-group">
-                <div class="checkbox-item">
-                    <input type="checkbox" id="checkD">
-                    <label for="checkD">Add OCSP stapling?</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="checkE">
-                    <label for="checkE">Add certificate timestamps?</label>
-                    <input type="number" id="inputSctCount" value="3" min="1" class="tiny-input hidden">
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="checkF">
-                    <label for="checkF">Encrypt public key?</label>
-                </div>
-            </div>
-
-            <button id="addBtn" class="btn-primary">Add to Comparison</button>
-        </div>
-
-        <div class="results-panel">
-            <div id="result-box" class="result-container hidden">
-                <h3>Configurations</h3>
-                <div id="result-content" class="columns-wrapper">
-                    <div id="col-left" class="config-column"></div>
-                    <div id="col-right" class="config-column"></div>
-                </div>
-            </div>
-            
-            <div id="empty-state" class="empty-state">
-                <p>Erstellte Konfigurationen werden hier in zwei Spalten angezeigt.</p>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-<script src="files/pki_schemes.js"></script>
-<script src="files/pki_params.js"></script>
-<script src="files/schemes.js"></script>
-<script src="files/parametersets.js"></script>
-
-<script src="scripts/script.js"></script>
+    <footer>
+        <p>&copy; 2025 Jonas Dinspel</p>
+    </footer>
 
 </body>
 </html>
