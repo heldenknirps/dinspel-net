@@ -1,17 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- const - placeholders for now --- 
     const OCSP_SIZE = 500; 
     const SCT_SIZE = 200;  
 
-    // ---  csv parser  ---
     function parseCSVtoObjects(csvText) {
         if (!csvText) return [];
         const lines = csvText.trim().split('\n').map(l => l.trim()).filter(l => l.length > 0);
         if (lines.length < 2) return [];
-
         const headers = lines[0].split(',').map(h => h.trim());
-        
         const data = [];
         for (let i = 1; i < lines.length; i++) {
             const currentLine = lines[i].split(',');
@@ -28,283 +24,188 @@ document.addEventListener('DOMContentLoaded', () => {
         return data;
     }
 
-    // --- load data ---
     const pkiDataSchemes = parseCSVtoObjects(rawPKIschemes);
     const pkiDataParams = parseCSVtoObjects(rawPKIparams);
     const schemesData = parseCSVtoObjects(rawSchemes);
     const paramsData = parseCSVtoObjects(rawParams);
 
-    // --- dom elements ---
     const inputA = document.getElementById('inputA');
     const listA = document.getElementById('listA');
     const inputA1 = document.getElementById('inputA1');
     const listA1 = document.getElementById('listA1');
+    const checkHybrid = document.getElementById('checkHybrid');
+    const hybridInputs = document.getElementById('hybrid-inputs');
+    const inputA2 = document.getElementById('inputA2');
+    const listA2 = document.getElementById('listA2');
+    const inputA2_1 = document.getElementById('inputA2_1');
+    const listA2_1 = document.getElementById('listA2_1');
     const inputB = document.getElementById('inputB');
     const listB = document.getElementById('listB');
     const inputC = document.getElementById('inputC');
     const listC = document.getElementById('listC');
-    
     const addBtn = document.getElementById('addBtn');
     const resultBox = document.getElementById('result-box');
-    const resultContent = document.getElementById('result-content');
     const emptyState = document.getElementById('empty-state');
-    
     const checkD = document.getElementById('checkD');
     const checkE = document.getElementById('checkE');
     const inputSctCount = document.getElementById('inputSctCount');
     const checkF = document.getElementById('checkF');
 
-
-    // History
     let configHistory = [];
 
-    // --- Ocsp OR Ct ---
-    checkD.addEventListener('change', () => {
-        if (checkD.checked) {
-            checkE.checked = false;
-            inputSctCount.classList.add('hidden');
-        }
-    });
-
-    checkE.addEventListener('change', () => {
-        if (checkE.checked) {
-            checkD.checked = false;
-            inputSctCount.classList.remove('hidden');
+    checkHybrid.addEventListener('change', () => {
+        if (checkHybrid.checked) {
+            hybridInputs.classList.remove('hidden');
+            document.getElementById('labelA').textContent = "Key Exchange - KEM"
+            const kemOnly = pkiDataSchemes.filter(d => d.kem == "1");
+            setupCustomDropdown(inputA, listA, kemOnly, 'Scheme', (val) => updateListA1(val));
+            const classicOnly = pkiDataSchemes.filter(d => d.kem == "0");
+            setupCustomDropdown(inputA2, listA2, classicOnly, 'Scheme', (val) => updateListA2_1(val));
         } else {
-            inputSctCount.classList.add('hidden');
+            hybridInputs.classList.add('hidden');
+            document.getElementById('labelA').textContent = "Key Exchange"
+            setupCustomDropdown(inputA, listA, pkiDataSchemes, 'Scheme', (val) => updateListA1(val));
         }
     });
 
-
-    // --- Neat dropdowns ---
     function setupCustomDropdown(inputElement, listElement, dataArray, displayKey, onSelect) {
-        
         function renderOptions(filterText = "") {
             listElement.innerHTML = "";
             const lowerFilter = filterText.toLowerCase();
-
-            const filtered = dataArray.filter(item => {
-                const val = item[displayKey] ? item[displayKey].toString() : "";
-                return val.toLowerCase().includes(lowerFilter);
-            });
-
-            if (filtered.length === 0) {
-                const noResult = document.createElement('div');
-                noResult.className = 'dropdown-option';
-                noResult.style.color = '#777';
-                noResult.style.cursor = 'default';
-                noResult.textContent = "No hits";
-                listElement.appendChild(noResult);
-                return;
-            }
-
+            const filtered = dataArray.filter(item => (item[displayKey] || "").toLowerCase().includes(lowerFilter));
             filtered.forEach(item => {
                 const text = item[displayKey];
                 const div = document.createElement('div');
                 div.className = 'dropdown-option';
                 div.textContent = text;
-                
                 div.addEventListener('click', () => {
                     inputElement.value = text;
                     listElement.classList.remove('show');
                     if (onSelect) onSelect(text);
                 });
-
                 listElement.appendChild(div);
             });
         }
-
-        inputElement.addEventListener('focus', () => {
-            renderOptions(inputElement.value);
-            listElement.classList.add('show');
-        });
-
-        inputElement.addEventListener('input', () => {
-            renderOptions(inputElement.value);
-            listElement.classList.add('show');
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!inputElement.contains(e.target) && !listElement.contains(e.target)) {
-                listElement.classList.remove('show');
-            }
-        });
+        inputElement.addEventListener('focus', () => { renderOptions(inputElement.value); listElement.classList.add('show'); });
+        inputElement.addEventListener('input', () => { renderOptions(inputElement.value); listElement.classList.add('show'); });
+        document.addEventListener('click', (e) => { if (!inputElement.contains(e.target) && !listElement.contains(e.target)) listElement.classList.remove('show'); });
     }
 
-    // --- initializing dropdowns ---
-
-    // pki's
-    //setupCustomDropdown(inputA, listA, pkiDataSchemes, 'Scheme', null);
-
-    setupCustomDropdown(inputA, listA, pkiDataSchemes, 'Scheme', (selectedValue) => {
-        updateListA1(selectedValue);
-    });
-
-    // Parametersets
-    let currentSchemesParamsData = [];
-
-    function updateListA1(schemeA) {
+    function updateListA1(scheme) {
         inputA1.value = "";
-        listA1.innerHTML = "";
-        
-        currentSchemesParamsData = pkiDataParams.filter(row => row.Scheme === schemeA);
-
-        if (currentSchemesParamsData.length > 0) {
-            inputA1.disabled = false;
-            inputA1.placeholder = "Select Parameterset";
-            setupCustomDropdown(inputA1, listA1, currentSchemesParamsData, 'Parameterset', null);
-        } else {
-            inputA1.disabled = true;
-            inputA1.placeholder = "No Parametersets found";
-            listA1.innerHTML = "";
-        }
+        const filtered = pkiDataParams.filter(row => row.Scheme === scheme);
+        inputA1.disabled = filtered.length === 0;
+        setupCustomDropdown(inputA1, listA1, filtered, 'Parameterset', null);
     }
 
-    setupCustomDropdown(inputA1, listA1, [], 'Parameterset', null);
+    function updateListA2_1(scheme) {
+        inputA2_1.value = "";
+        const filtered = pkiDataParams.filter(row => row.Scheme === scheme);
+        inputA2_1.disabled = filtered.length === 0;
+        setupCustomDropdown(inputA2_1, listA2_1, filtered, 'Parameterset', null);
+    }
 
-    // Signature Schemes
-    setupCustomDropdown(inputB, listB, schemesData, 'Scheme', (selectedValue) => {
-        updateListC(selectedValue);
-    });
-
-    // Parametersets
-    let currentParamsData = [];
-
-    function updateListC(schemeB) {
+    function updateListC(scheme) {
         inputC.value = "";
-        listC.innerHTML = "";
-        
-        currentParamsData = paramsData.filter(row => row.Scheme === schemeB);
-
-        if (currentParamsData.length > 0) {
-            inputC.disabled = false;
-            inputC.placeholder = "Select Parameterset";
-            setupCustomDropdown(inputC, listC, currentParamsData, 'Parameterset', null);
-        } else {
-            inputC.disabled = true;
-            inputC.placeholder = "No Parametersets found";
-            listC.innerHTML = "";
-        }
+        const filtered = paramsData.filter(row => row.Scheme === scheme);
+        inputC.disabled = filtered.length === 0;
+        setupCustomDropdown(inputC, listC, filtered, 'Parameterset', null);
     }
 
-    setupCustomDropdown(inputC, listC, [], 'Parameterset', null);
+    setupCustomDropdown(inputA, listA, pkiDataSchemes, 'Scheme', (val) => updateListA1(val));
+    setupCustomDropdown(inputB, listB, schemesData, 'Scheme', (val) => updateListC(val));
 
-
-    // --- buttons ---
+    checkD.addEventListener('change', () => { if (checkD.checked) { checkE.checked = false; inputSctCount.classList.add('hidden'); }});
+    checkE.addEventListener('change', () => { 
+        if (checkE.checked) { checkD.checked = false; inputSctCount.classList.remove('hidden'); } 
+        else { inputSctCount.classList.add('hidden'); }
+    });
 
     addBtn.addEventListener('click', () => {
-        const valA = inputA.value;
-        const valA1 = inputA1.value;
-        const valB = inputB.value;
-        const valC = inputC.value;
-        
-        // get checkbox state
-        const useOcsp = checkD.checked;
-        const useSct = checkE.checked;
-        const sctCount = useSct ? (parseInt(inputSctCount.value) || 3) : 0;
-        const useEncPk = checkF.checked;
+        const rowA = pkiDataSchemes.find(d => d.Scheme === inputA.value);
+        const rowA1 = pkiDataParams.find(d => d.Parameterset === inputA1.value && d.Scheme === inputA.value);
+        const isHybrid = checkHybrid.checked;
+        const rowA2 = isHybrid ? pkiDataSchemes.find(d => d.Scheme === inputA2.value) : null;
+        const rowA21 = isHybrid ? pkiDataParams.find(d => d.Parameterset === inputA2_1.value && d.Scheme === inputA2.value) : null;
+        const rowB = schemesData.find(d => d.Scheme === inputB.value);
+        const rowC = paramsData.find(d => d.Parameterset === inputC.value && d.Scheme === inputB.value);
 
-        // get data for selected options
-        const rowA = pkiDataSchemes.find(d => d.Scheme === valA);
-        const rowA1 = pkiDataParams.find(d => d.Parameterset === valA1 && d.Scheme === valA);
-        const rowB = schemesData.find(d => d.Scheme === valB);
-        const rowC = paramsData.find(d => d.Parameterset === valC && d.Scheme === valB);
+        if ((!rowA || !rowA1) && (!rowB || !rowC)) { alert("Bitte Konfiguration vervollständigen."); return; }
+        if (isHybrid && (!rowA2 || !rowA21)) { alert("Bitte beide Hybrid-Sets vervollständigen."); return; }
 
-        // validate
-        if ((!rowA || !rowA1) && (!rowB || !rowC)) {
-            alert("Please finish your config first!");
-            return;
-        }
-
-        // create new data set
-        const newSet = {
-            id: Date.now(),
-            rowA: rowA,
-            rowA1: rowA1,
-            rowB: rowB,
-            rowC: rowC,
-            useOcsp: useOcsp, 
-            useSct: useSct,
-            useEncPk: useEncPk,
-            sctCount: sctCount    
-        };
-
-        // add to history, limit size
-        configHistory.push(newSet);
+        configHistory.push({
+            id: Date.now(), rowA, rowA1, rowA2, rowA21, rowB, rowC, isHybrid,
+            useOcsp: checkD.checked, useSct: checkE.checked, 
+            sctCount: parseInt(inputSctCount.value) || 3, useEncPk: checkF.checked
+        });
 
         renderHistory();
-
-        // --- reset selection ---
-        inputA.value = "";
-        inputA1.value = "";
-        inputB.value = "";
-        inputC.value = "";
-     
-        checkD.checked = false; 
-        checkE.checked = false;
-        inputSctCount.classList.add('hidden');
-        checkF.checked = false;
-
-        inputC.disabled = true;
-        inputC.placeholder = "Select scheme first...";
-        listC.innerHTML = ""; 
+        inputA.value = ""; inputA1.value = ""; inputA2.value = ""; inputA2_1.value = ""; inputB.value = ""; inputC.value = "";
     });
 
-    // render existing configs
     function renderHistory() {
-        if (configHistory.length === 0) {
-            resultBox.classList.add('hidden');
-            emptyState.style.display = 'flex';
-            return;
-        }
-
+        if (configHistory.length === 0) return;
         emptyState.style.display = 'none';
         resultBox.classList.remove('hidden');
 
         const colLeft = document.getElementById('col-left');
         const colRight = document.getElementById('col-right');
+        colLeft.innerHTML = ""; colRight.innerHTML = "";
 
-        colLeft.innerHTML = "";
-        colRight.innerHTML = "";
-        
         configHistory.forEach((set, index) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'set-wrapper';
-            // let html = `<div class="set-header">Configuration ${index + 1}</div>`;
+            const { rowA, rowA1, rowA2, rowA21, rowB, rowC, isHybrid, useOcsp, useSct, sctCount, useEncPk } = set;
 
-            // get data from set
-            const { rowA, rowA1, rowB, rowC, useOcsp, useSct, sctCount, useEncPk } = set;
+            // --- Basenberechnung ---
+            const pk1 = parseInt(rowA1?.pk) || 0;
+            const pk2 = isHybrid ? (parseInt(rowA21?.pk) || 0) : 0;
+            const clientHelloPKTotal = pk1 + pk2;
+            const clientHelloTotal = useEncPk ? 2 * clientHelloPKTotal : clientHelloPKTotal;
 
-            // Berechne Zusatz-Bytes
+            const res1 = (rowA1?.kem == '1') ? (parseInt(rowA1.ct) || 0) : (parseInt(rowA1.pk) || 0);
+            const res2 = isHybrid ? ((rowA21?.kem == '1') ? (parseInt(rowA21.ct) || 0) : (parseInt(rowA21.pk) || 0)) : 0;
+            
+            const sigSize = rowC ? (parseInt(rowC['sig size']) || 0) : 0;
             const ocspBytes = useOcsp ? OCSP_SIZE : 0;
             const sctBytes = useSct ? (sigSize * sctCount) : 0;
             
-            // gesamtsumme berechnen
-            if (rowA1 && rowA1.kem == '1') { useKEM = true}
-            if (rowA1 && rowA1.kem == '0') { useKEM = false}
+            const serverHelloTotal = (res1 + res2) + sigSize + ocspBytes + sctBytes;
+            const totalSum = clientHelloTotal + serverHelloTotal;
 
-            const ctSize = parseInt(rowA1.ct) || 0;
-            const pkSize = parseInt(rowA1.pk) || 0;
+            // Titel
+            const title = (isHybrid ? `${rowA.Scheme} + ${rowA2.Scheme}` : (rowA?.Scheme || "")) + 
+                          ((rowA || rowA2) && rowB ? " / " : "") + 
+                          (rowB ? rowB.Scheme : "");
 
-            const sigSize = rowC ? (parseInt(rowC['sig size']) || 0) : 0;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'set-wrapper';
 
-            var totalSum = (useEncPk ? 2*pkSize : pkSize) + ocspBytes + sctBytes + (useKEM ? ctSize : pkSize) + sigSize;
-
-            // Titel erstellen 
-
-            const title = (rowA && rowA1 ? rowA.Scheme : "") +  ((rowA && rowA1) && (rowB && rowC) ? " + " : "") + (rowB && rowC ? rowB.Scheme : "");
-
-            // header
+            // --- Header ---
             let html = `
                 <div class="set-summary">
                     <span class="set-title">${title}</span>
-                    <span class="set-total-badge">${totalSum} Bytes</span>
+                    <span class="set-total-badge">${totalSum} B</span>
                     <span class="toggle-icon">▼</span>
                 </div>
                 <div class="set-details">`;
 
-            // PKI
-            if (rowA && rowA1) {
+            // --- Key Exchange Sektion ---
+            if (isHybrid) {
+                const linkA = rowA.link && rowA.link.length > 0 ? rowA.link : "#";
+                const linkA2 = rowA2.link && rowA2.link.length > 0 ? rowA2.link : "#";
+                html += `
+                <div class="result-section">
+                    <strong>Key Exchange - KEM:</strong>
+                    <div class="result-line">Scheme: <a href="${linkA}" target="_blank">${rowA.Scheme}</a></div>
+                    <div class="result-line">Parameterset: ${rowA1.Parameterset}</div>
+                    <div class="result-line">NIST Level: ${rowA1['nist-sec-level'] || '-'}</div>
+                </div>
+                <div class="result-section">
+                    <strong>Key Exchange - PKI:</strong>
+                    <div class="result-line">Scheme: <a href="${linkA2}" target="_blank">${rowA2.Scheme}</a></div>
+                    <div class="result-line">Parameterset: ${rowA21.Parameterset}</div>
+                    <div class="result-line">NIST Level: ${rowA21['nist-sec-level'] || '-'}</div>
+                </div>`;
+            } else if (rowA && rowA1) {
                 const linkA = rowA.link && rowA.link.length > 0 ? rowA.link : "#";
                 html += `
                 <div class="result-section">
@@ -313,9 +214,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="result-line">Parameterset: ${rowA1.Parameterset}</div>
                     <div class="result-line">NIST Level: ${rowA1['nist-sec-level'] || '-'}</div>
                 </div>`;
-                }
+            }
 
-            // Signature
+            // --- Signature Sektion ---
             if (rowB && rowC) {
                 const linkB = rowB.Website && rowB.Website.length > 0 ? rowB.Website : "#";
                 html += `
@@ -327,92 +228,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
             }
 
-            // Client Hello
-            if (rowA1) {
+            // --- Client Hello Sektion ---
+            html += `<div class="result-section"><strong>Client Hello:</strong>`;
+            if (isHybrid) {
                 html += `
-                <div class="result-section">
-                    <strong>Client Hello:</strong>
-                    <div class="result-line">Public Key Size${useEncPk ?' (encrypted): ' +  2*rowA1.pk:': ' + rowA1.pk} byte</div>
-                </div>`;
-                //totalSum += parseInt(useEncPk ? 2*rowA1.pk : rowA1.pk)
+                    <div class="result-line">KEM Public Key Size: ${pk1} bytes</div>
+                    <div class="result-line">PKI Public Key Size: ${pk2} bytes</div>
+                    <div class="result-line">Client Hello Size: ${useEncPk ? ' (encrypted)' : ''}: ${clientHelloTotal} bytes</div></div>`;
             }
-
-            // Server Hello
-            
-            // lil help for optional lines
-            function getOptionalLines() {
-                let lines = "";
-                if (useOcsp) {
-                    lines += `<div class="result-line">Ocsp stapeling: ${ocspBytes} bytes</div>`;
-                    totalSum += ocspBytes
-                }
-                if (useSct) {
-                    lines += `<div class="result-line">Certificate timestamps(${sctCount}): ${sctBytes} bytes</div>`;
-                    //totalSum += parseInt(sctBytes)
-                }
-                return lines;
-            }
-
-            // KEM
-            if (rowA1 && rowA1.kem == '1') {
-                //const ctSize = parseInt(rowA1.ct) || 0;
-                //const sigSize = rowC ? (parseInt(rowC['sig size']) || 0) : 0;
-                
-                // Total size
-                const total = ctSize + sigSize + ocspBytes + sctBytes;
-
+            else{
                 html += `
-                <div class="result-section">
-                    <strong>Server Hello:</strong>
-                    <div class="result-line">Ciphertext: ${ctSize} bytes</div>
-                    <div class="result-line">Signature: ${rowC ? sigSize + ' bytes' : '<em>(Fehlt)</em>'}</div>
-                    ${getOptionalLines()}
-                    <div class="result-line"><b>Total: ${total} bytes</b></div>
-                </div>`;
-                //totalSum += parseInt(total)
+                <div class="result-line">Public Key Size: ${pk1} bytes</div>
+                <div class="result-line">Client Hello Size: ${useEncPk ? ' (encrypted)' : ''}: ${clientHelloTotal} bytes</div></div>`;
             }
             
-            // Public Key
-            if (rowA1 && rowA1.kem == '0') {
-                //const pkSize = parseInt(rowA1.pk) || 0;
-                //const sigSize = rowC ? (parseInt(rowC['sig size']) || 0) : 0;
-                
-                // Total size
-                const total = pkSize + sigSize + ocspBytes + sctBytes;
 
+            // --- Server Hello Sektion ---
+            html += `<div class="result-section"><strong>Server Hello:</strong>`;
+            if (isHybrid) {
+                const label1 = (rowA1.kem == '1') ? 'Ciphertext' : 'Public Key';
+                const label2 = (rowA21.kem == '1') ? 'Ciphertext' : 'Public Key';
                 html += `
-                <div class="result-section">
-                    <strong>Server Hello:</strong>
-                    <div class="result-line">Public Key: ${pkSize} bytes</div>
-                    <div class="result-line">Signature: ${rowC ? sigSize + ' bytes' : '<em>(Fehlt)</em>'}</div>
-                    ${getOptionalLines()}
-                    <div class="result-line"><b>Total: ${total} bytes</b></div>
-                </div>`;
-                //totalSum += parseInt(total)
+                    <div class="result-line">${label1} ${res1} bytes</div>
+                    <div class="result-line">${label2} ${res2} bytes</div>`;
+            } else {
+                const label = (rowA1 && rowA1.kem == '1') ? 'Ciphertext' : 'Public Key';
+                html += `<div class="result-line">${label}: ${res1} bytes</div>`;
             }
+            
+            html += `
+                <div class="result-line">Signature: ${rowC ? sigSize + ' bytes' : '<em>(missing)</em>'}</div>
+                ${useOcsp ? `<div class="result-line">OCSP stapling: ${ocspBytes} bytes</div>` : ''}
+                ${useSct ? `<div class="result-line">Cert timestamps (${sctCount}): ${sctBytes} bytes</div>` : ''}
+                <div class="result-line"><b>Server Hello Size: ${serverHelloTotal} bytes</b></div>
+            </div>`;
 
-             //calculate total size
-            //const totalSum = (rowA && rowA1 ? (useEncPk ? 2*rowA1.pk : rowA1.pk) : 0) + (rowB && rowC ? )
+            // --- Gesamtsumme ---
+            html += `
+            <div class="result-section">
+                <strong>&sum; ${totalSum} bytes Handshake</strong>
+            </div>`;
 
-            // Sum
-            if (rowA && rowA1 || rowB && rowC) {
-                html += `
-                <div class="result-section">
-                    <strong>&sum; ${totalSum} bytes</strong>
-                </div>`;
-            }
-
+            html += `</div>`; // Ende set-details
             wrapper.innerHTML = html;
-
-            wrapper.querySelector('.set-summary').addEventListener('click', () => {
-                wrapper.classList.toggle('is-expanded');
-            });
-
-            if (index % 2 === 0) {
-            colLeft.appendChild(wrapper);
-        } else {
-            colRight.appendChild(wrapper);
-        }
+            wrapper.querySelector('.set-summary').addEventListener('click', () => wrapper.classList.toggle('is-expanded'));
+            (index % 2 === 0 ? colLeft : colRight).appendChild(wrapper);
         });
     }
 });
