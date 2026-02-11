@@ -1,4 +1,3 @@
-/* --- GRUNDLEGENDE FARBPALETTE (Dark Mode) --- */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #121212;
@@ -28,7 +27,6 @@ body {
     flex-wrap: wrap;
 }
 
-/* LINKS: Auswahl */
 .selection-panel {
     flex: 0 0 350px;
     min-width: 300px;
@@ -46,7 +44,6 @@ body {
     }
 }
 
-/* RECHTS: Ergebnisse */
 .results-panel {
     flex: 1;
     min-width: 300px;
@@ -62,7 +59,7 @@ h2 {
 
 .form-group {
     margin-bottom: 1.2rem;
-    position: relative; /* Wichtig für Dropdown Positionierung */
+    position: relative; 
 }
 
 label {
@@ -72,7 +69,6 @@ label {
     color: #c0c0c0;
 }
 
-/* --- NEU: Custom Dropdown Styling --- */
 .custom-dropdown {
     position: relative;
     width: 100%;
@@ -102,19 +98,18 @@ input:disabled {
     cursor: not-allowed;
 }
 
-/* Die Liste, die aufklappt */
 .dropdown-options {
     position: absolute;
-    top: 105%; /* Ein kleines Stück unter dem Input */
+    top: 105%; 
     left: 0;
     right: 0;
     background: #252526;
     border: 1px solid #444;
     border-radius: 6px;
-    max-height: 250px; /* Scrollbar ab hier */
+    max-height: 250px; 
     overflow-y: auto;
     z-index: 1000;
-    display: none; /* Standardmäßig unsichtbar */
+    display: none; 
     box-shadow: 0 5px 15px rgba(0,0,0,0.5);
 }
 
@@ -122,7 +117,7 @@ input:disabled {
     display: block;
 }
 
-/* Einzelner Eintrag in der Liste */
+
 .dropdown-option {
     padding: 10px 12px;
     cursor: pointer;
@@ -139,7 +134,6 @@ input:disabled {
     background-color: #007bff;
     color: white;
 }
-/* ------------------------------------- */
 
 hr {
     border: 0;
@@ -195,7 +189,6 @@ hr {
     transform: translateY(-1px);
 }
 
-/* Ergebnis Container */
 .result-container {
     border-radius: 8px;
     height: 100%;
@@ -309,33 +302,30 @@ hr {
     font-size: 0.9rem;
 }
 
-/* Utility Class zum Verstecken */
+
 .hidden {
     display: none !important;
 }
 
-/* --- Bestehendes CSS ergänzen/ändern --- */
 .columns-wrapper {
     display: flex;
     gap: 20px;
-    align-items: flex-start; /* Wichtig: Spalten richten sich oben aus */
+    align-items: flex-start; 
 }
 
 .config-column {
-    flex: 1; /* Beide Spalten nehmen gleich viel Platz ein */
+    flex: 1; 
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Abstand zwischen den Karten in einer Spalte */
+    gap: 15px; 
 }
 
-/* Responsiv: Auf schmalen Bildschirmen untereinander */
 @media (max-width: 900px) {
     .columns-wrapper {
         flex-direction: column;
     }
 }
 
-/* Design der Karte bleibt gleich */
 .set-wrapper {
     background: #252526;
     border: 1px solid #3a3a3a;
@@ -354,11 +344,76 @@ hr {
 }
 
 .set-details {
-    display: none; /* Standardmäßig eingeklappt */
+    display: none; 
     padding: 15px;
     background: #1e1e1e;
 }
 
 .set-wrapper.is-expanded .set-details {
     display: block;
+}
+
+/***************/
+/*** Tooltip ***/
+/***************/
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.tooltip-box {
+  visibility: hidden;
+  opacity: 0;
+  width: 360px;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 10px;
+  position: absolute;
+  z-index: 10;
+  bottom: 125%; 
+  left: 50%;
+  transform: translateX(-50%); 
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.tooltip-box::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background: transparent;
+}
+
+.tooltip-container:hover .tooltip-box {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
+}
+
+.tooltip-container .tooltip-box:hover {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-box a {
+  color: #00bbff;
+  text-decoration: underline;
+  display: block;
+  margin-top: 5px;
 }

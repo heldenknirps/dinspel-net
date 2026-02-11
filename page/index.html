@@ -39,7 +39,7 @@
 
             <div id="hybrid-inputs" class="hidden">
                 <div class="form-group">
-                    <label for="inputA2">Key Exchange - PKI</label>
+                    <label for="inputA2">Key Exchange 2</label>
                     <div class="custom-dropdown">
                         <input type="text" id="inputA2" placeholder="Select Scheme..." autocomplete="off">
                         <div id="listA2" class="dropdown-options"></div>
@@ -78,16 +78,39 @@
             <div class="checkbox-group">
                 <div class="checkbox-item">
                     <input type="checkbox" id="checkD">
-                    <label for="checkD">Add OCSP stapling?</label>
+                    <label for="checkD">OCSP stapling </label>
+                    <span class="tooltip-container">
+                        <span class="help-icon">?</span>
+                        <div class="tooltip-box">
+                            Checking this box enables OCSP-stapling, adding an OCSP-response of ~500b to the server message.
+                        <a href="https://datatracker.ietf.org/doc/html/rfc6961#autoid-6" target="_blank">More</a>
+                        <a href="https://datatracker.ietf.org/doc/html/rfc6960" target="_blank">OCSP</a>
+                        </div>
+                    </span>
+                                  
                 </div>
                 <div class="checkbox-item">
                     <input type="checkbox" id="checkE">
-                    <label for="checkE">Add certificate timestamps?</label>
+                    <label for="checkE">Certificate Transparency </label>
+                    <span class="tooltip-container">
+                        <span class="help-icon">?</span>
+                        <div class="tooltip-box">
+                            Checking this box enables Certificate Transparency, adding the selected amount of STCs of the selected certificate to the server message.
+                        <a href="https://certificate.transparency.dev/" target="_blank">More</a>
+                        </div>
+                    </span>
                     <input type="number" id="inputSctCount" value="3" min="1" class="tiny-input hidden">
                 </div>
                 <div class="checkbox-item">
                     <input type="checkbox" id="checkF">
-                    <label for="checkF">Encrypt public key?</label>
+                    <label for="checkF">Encrypted Client Hello </label>
+                    <span class="tooltip-container">
+                        <span class="help-icon">?</span>
+                        <div class="tooltip-box">
+                            Checking this box enables Encrypted Client Hello, effectivly doubling size of the Client Hellos public key.
+                        <a href="https://blog.cloudflare.com/announcing-encrypted-client-hello/" target="_blank">More</a>
+                        </div>
+                    </span>
                 </div>
             </div>
 
@@ -104,7 +127,7 @@
             </div>
             
             <div id="empty-state" class="empty-state">
-                <p>Erstellte Konfigurationen werden hier in zwei Spalten angezeigt.</p>
+                <p>Created instantiations will be displayed here</p>
             </div>
         </div>
 

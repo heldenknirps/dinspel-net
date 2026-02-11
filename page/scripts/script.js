@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     checkHybrid.addEventListener('change', () => {
         if (checkHybrid.checked) {
             hybridInputs.classList.remove('hidden');
-            document.getElementById('labelA').textContent = "Key Exchange - KEM"
+            document.getElementById('labelA').textContent = "Key Exchange 1"
             const kemOnly = pkiDataSchemes.filter(d => d.kem == "1");
             setupCustomDropdown(inputA, listA, kemOnly, 'Scheme', (val) => updateListA1(val));
             const classicOnly = pkiDataSchemes.filter(d => d.kem == "0");
@@ -130,8 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const rowB = schemesData.find(d => d.Scheme === inputB.value);
         const rowC = paramsData.find(d => d.Parameterset === inputC.value && d.Scheme === inputB.value);
 
-        if ((!rowA || !rowA1) && (!rowB || !rowC)) { alert("Bitte Konfiguration vervollständigen."); return; }
-        if (isHybrid && (!rowA2 || !rowA21)) { alert("Bitte beide Hybrid-Sets vervollständigen."); return; }
+        if ((!rowA || !rowA1) && (!rowB || !rowC)) { alert("Finish config first!"); return; }
+        if (isHybrid && (!rowA2 || !rowA21)) { alert("Finish both sets!"); return; }
 
         configHistory.push({
             id: Date.now(), rowA, rowA1, rowA2, rowA21, rowB, rowC, isHybrid,
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="set-details">`;
 
-            // --- Key Exchange Sektion ---
+            // --- Key Exchange ---
             if (isHybrid) {
                 const linkA = rowA.link && rowA.link.length > 0 ? rowA.link : "#";
                 const linkA2 = rowA2.link && rowA2.link.length > 0 ? rowA2.link : "#";
@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
             }
 
-            // --- Signature Sektion ---
+            // --- Signature ---
             if (rowB && rowC) {
                 const linkB = rowB.Website && rowB.Website.length > 0 ? rowB.Website : "#";
                 html += `
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
             }
 
-            // --- Client Hello Sektion ---
+            // --- Client Hello ---
             html += `<div class="result-section"><strong>Client Hello:</strong>`;
             if (isHybrid) {
                 html += `
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
 
-            // --- Server Hello Sektion ---
+            // --- Server Hello ---
             html += `<div class="result-section"><strong>Server Hello:</strong>`;
             if (isHybrid) {
                 const label1 = (rowA1.kem == '1') ? 'Ciphertext' : 'Public Key';
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <strong>&sum; ${totalSum} bytes Handshake</strong>
             </div>`;
 
-            html += `</div>`; // Ende set-details
+            html += `</div>`; 
             wrapper.innerHTML = html;
             wrapper.querySelector('.set-summary').addEventListener('click', () => wrapper.classList.toggle('is-expanded'));
             (index % 2 === 0 ? colLeft : colRight).appendChild(wrapper);
