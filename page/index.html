@@ -13,20 +13,25 @@
         
         <div class="selection-panel">
             <h2>Handshake Setup</h2>
+            <!--
+            ########################
+            ##### Key Exchnage #####
+            ########################
+            -->
 
             <div class="form-group">
-                <label for="inputA" id="labelA">Key Exchange</label>
+                <label for="keyExScheme1" id="keyEx1">Key Exchange</label>
                 <div class="custom-dropdown">
-                    <input type="text" id="inputA" placeholder="Select Scheme..." autocomplete="off">
-                    <div id="listA" class="dropdown-options"></div>
+                    <input type="text" id="keyExScheme1" placeholder="Select Scheme..." autocomplete="off">
+                    <div id="listKeyExScheme1" class="dropdown-options"></div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="inputA1">Parameterset</label>
+                <label for="keyExParams1">Parameterset</label>
                 <div class="custom-dropdown">
-                    <input type="text" id="inputA1" placeholder="Select scheme first.." disabled autocomplete="off">
-                    <div id="listA1" class="dropdown-options"></div>
+                    <input type="text" id="keyExParams1" placeholder="Select scheme first.." disabled autocomplete="off">
+                    <div id="listKeyExParams1" class="dropdown-options"></div>
                 </div>
             </div>
 
@@ -37,61 +42,94 @@
                 </div>
             </div>
 
+            <!--##### Hybrid #####-->
             <div id="hybrid-inputs" class="hidden">
                 <div class="form-group">
-                    <label for="inputA2">Key Exchange 2</label>
+                    <label for="keyExScheme2">Key Exchange 2</label>
                     <div class="custom-dropdown">
-                        <input type="text" id="inputA2" placeholder="Select Scheme..." autocomplete="off">
-                        <div id="listA2" class="dropdown-options"></div>
+                        <input type="text" id="keyExScheme2" placeholder="Select Scheme..." autocomplete="off">
+                        <div id="listKeyExScheme2" class="dropdown-options"></div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="inputA2_1">Parameterset</label>
+                    <label for="keyExParams2">Parameterset</label>
                     <div class="custom-dropdown">
-                        <input type="text" id="inputA2_1" placeholder="Select scheme first.." disabled autocomplete="off">
-                        <div id="listA2_1" class="dropdown-options"></div>
+                        <input type="text" id="keyExParams2" placeholder="Select scheme first.." disabled autocomplete="off">
+                        <div id="listKeyExParams2" class="dropdown-options"></div>
                     </div>
                 </div>
             </div>
 
+            <!--
+            ########################
+            ###### Signature #######
+            ########################
+            -->
+
             <hr>
 
             <div class="form-group">
-                <label for="inputB">Signature Scheme</label>
+                <label for="sigScheme">Signature Scheme</label>
                 <div class="custom-dropdown">
-                    <input type="text" id="inputB" placeholder="Select Scheme..." autocomplete="off">
-                    <div id="listB" class="dropdown-options"></div>
+                    <input type="text" id="sigScheme" placeholder="Select Scheme..." autocomplete="off">
+                    <div id="listSigSchemes" class="dropdown-options"></div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="inputC">Parameterset</label>
+                <label for="sigParams">Parameterset</label>
                 <div class="custom-dropdown">
-                    <input type="text" id="inputC" placeholder="Select scheme first.." disabled autocomplete="off">
-                    <div id="listC" class="dropdown-options"></div>
+                    <input type="text" id="sigParams" placeholder="Select scheme first.." disabled autocomplete="off">
+                    <div id="listSigParams" class="dropdown-options"></div>
                 </div>
             </div>
 
-            <hr>
+            <!--
+            ########################
+            ###### Extensions ######
+            ########################
+            -->    
 
+            <hr>
+            <!--##### OCSP-Stapling #####-->
             <div class="checkbox-group">
                 <div class="checkbox-item">
-                    <input type="checkbox" id="checkD">
-                    <label for="checkD">OCSP stapling </label>
+                    <input type="checkbox" id="checkOCSP">
+                    <label for="checkOCSP">OCSP stapling </label>
                     <span class="tooltip-container">
                         <span class="help-icon">?</span>
                         <div class="tooltip-box">
-                            Checking this box enables OCSP-stapling, adding an OCSP-response of ~500b to the server message.
-                        <a href="https://datatracker.ietf.org/doc/html/rfc6961#autoid-6" target="_blank">More</a>
+                            <p>Checking this box enables OCSP-stapling, adding an OCSP-response to the server message.</p>
+                            <p>By default ECDSA with secp256r1 is enabled, but all supported siganture schemes are aviable for selection.</p>
+                        <a href="https://datatracker.ietf.org/doc/html/rfc6961#autoid-6" target="_blank">OCSP-Stapling</a>
                         <a href="https://datatracker.ietf.org/doc/html/rfc6960" target="_blank">OCSP</a>
                         </div>
-                    </span>
-                                  
+                    </span>                 
                 </div>
+
+                <div id="ocsp-sig" class="hidden">
+                    <div class="form-group">
+                        <label for="sigSchemeOcsp">Signature Scheme</label>
+                        <div class="custom-dropdown">
+                            <input type="text" id="sigSchemeOcsp" placeholder="Select Scheme..." autocomplete="off">
+                            <div id="listSigSchemesOcsp" class="dropdown-options"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sigParamsOcsp">Parameterset</label>
+                        <div class="custom-dropdown">
+                            <input type="text" id="sigParamsOcsp" placeholder="Select scheme first.." disabled autocomplete="off">
+                            <div id="listSigParamsOcsp" class="dropdown-options"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--##### Certificate Transparency #####-->
                 <div class="checkbox-item">
-                    <input type="checkbox" id="checkE">
-                    <label for="checkE">Certificate Transparency </label>
+                    <input type="checkbox" id="checkCT">
+                    <label for="checkCT">Certificate Transparency </label>
                     <span class="tooltip-container">
                         <span class="help-icon">?</span>
                         <div class="tooltip-box">
@@ -99,11 +137,31 @@
                         <a href="https://certificate.transparency.dev/" target="_blank">More</a>
                         </div>
                     </span>
-                    <input type="number" id="inputSctCount" value="3" min="1" class="tiny-input hidden">
+                    <input type="number" id="inputSctCount" value="2" min="1" class="tiny-input hidden">
                 </div>
+
+                <div id="ct-sig" class="hidden">
+                    <div class="form-group">
+                        <label for="sigSchemeCt">Signature Scheme</label>
+                        <div class="custom-dropdown">
+                            <input type="text" id="sigSchemeCt" placeholder="Select Scheme..." autocomplete="off">
+                            <div id="listSigSchemesCt" class="dropdown-options"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sigParamsCt">Parameterset</label>
+                        <div class="custom-dropdown">
+                            <input type="text" id="sigParamsCt" placeholder="Select scheme first.." disabled autocomplete="off">
+                            <div id="listSigParamsCt" class="dropdown-options"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--##### Encrypted Client Hello #####-->
                 <div class="checkbox-item">
-                    <input type="checkbox" id="checkF">
-                    <label for="checkF">Encrypted Client Hello </label>
+                    <input type="checkbox" id="checkECH">
+                    <label for="checkECH">Encrypted Client Hello </label>
                     <span class="tooltip-container">
                         <span class="help-icon">?</span>
                         <div class="tooltip-box">
