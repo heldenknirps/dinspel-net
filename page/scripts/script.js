@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
         configHistory.forEach((set, index) => {
             const { kExS1, kExP1, kExS2, kExP2, sigS, sigP, isHybrid, useOcsp, useSct, sctCount, useEncPk, sigSOcsp, sigPOcsp, sigSCt, sigPCt} = set;
 
-            // --- Basenberechnung ---
+            // --- Calculations ---
             const pk1 = parseInt(kExP1?.pk) || 0;
             const pk2 = isHybrid ? (parseInt(kExP2?.pk) || 0) : 0;
             const clientHelloPKTotal = pk1 + pk2;
@@ -252,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const res1 = kExP1 ? ((kExP1?.kem == '1') ? (parseInt(kExP1.ct) || 0) : (parseInt(kExP1.pk) || 0)) : 0;
             const res2 = isHybrid ? ((kExP2?.kem == '1') ? (parseInt(kExP2.ct) || 0) : (parseInt(kExP2.pk) || 0)) : 0;
+            const validHybrid = isHybrid ? (kExP1?.kem == kExP2?.kem ? false : true ) : true;
             
             const sigSize = sigP ? (parseInt(sigP['sig size']) || 0) : 0;
             const ocspBytes = useOcsp ? (parseInt(sigPOcsp['sig size']) || 0) : 0;
@@ -271,10 +272,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     </span>
             `
 
+            // Hybrid Warning
+            let hybridWarning = `
+            <span class="tooltip-container">
+                        <span class="help-icon">!</span>
+                        <div class="tooltip-box" style="width: 360px;">
+                            A hybrid key exchange usually consists of one KEM and one PKE scheme.
+                            You have selected two schemes from the same category. While this is possible within this calculator,
+                            there would be no real use-case in life environments.
+                        </div>
+                    </span>
+            `
+
             // Titel
             const title = (isHybrid ? `${kExS1.Scheme} + ${kExS2.Scheme}` : (kExS1?.Scheme || "")) + 
                           ((kExS1 || kExS2) && sigS ? " / " : "") + 
-                          (sigS ? sigS.Scheme : "");
+                          (sigS ? sigS.Scheme : "") + 
+                          (validHybrid ? "" : hybridWarning);
 
             const wrapper = document.createElement('div');
             wrapper.className = 'set-wrapper';
@@ -283,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let html = `
                 <div class="set-summary">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <span class="delete-btn" title="Löschen">&times;</span>
+                        <span class="delete-btn" title="Delete">&times;</span>
                         <span class="set-title">${title}</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -300,13 +314,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 html += `
                 <div class="result-section">
                     <strong>Key Exchange 1:</strong>
-                    <div class="result-line">Scheme: <a href="${linkA}" target="_blank">${kExS1.Scheme}</a></div>
+                    <div class="result-line">Scheme: <a href="${linkA}" target="_blank">${kExS1.Scheme}</a>${validHybrid ? "" : hybridWarning}</div>
                     <div class="result-line">Parameterset: ${kExP1.Parameterset}</div>
                     <div class="result-line">NIST Level: ${kExP1['nist-sec-level'] || '-'}${tt}</div>
                 </div>
                 <div class="result-section">
                     <strong>Key Exchange 2:</strong>
-                    <div class="result-line">Scheme: <a href="${linkA2}" target="_blank">${kExS2.Scheme}</a></div>
+                    <div class="result-line">Scheme: <a href="${linkA2}" target="_blank">${kExS2.Scheme}</a>${validHybrid ? "" : hybridWarning}</div>
                     <div class="result-line">Parameterset: ${kExP2.Parameterset}</div>
                     <div class="result-line">NIST Level: ${kExP2['nist-sec-level'] || '-'}${tt}</div>
                 </div>`;
@@ -337,14 +351,14 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `<div class="result-section"><strong>Client Hello:</strong>`;
             if (isHybrid) {
                 html += `
-                    <div class="result-line">KEM Public Key Size: ${pk1} bytes</div>
-                    <div class="result-line">PKI Public Key Size: ${pk2} bytes</div>
-                    <div class="result-line">Client Hello Size: ${useEncPk ? ' (encrypted)' : ''}: ${clientHelloTotal} bytes</div></div>`;
+                    <div class="result-line">Public Key 1 Size: ${pk1} bytes</div>
+                    <div class="result-line">Public Key 2 Size: ${pk2} bytes</div>
+                    <div class="result-line">Client Hello Size ${useEncPk ? ' (encrypted)' : ''}: ${clientHelloTotal} bytes</div></div>`;
             }
             else{
                 html += `
                 <div class="result-line">Public Key Size: ${pk1} bytes</div>
-                <div class="result-line">Client Hello Size: ${useEncPk ? ' (encrypted)' : ''}: ${clientHelloTotal} bytes</div></div>`;
+                <div class="result-line">Client Hello Size ${useEncPk ? ' (encrypted)' : ''}: ${clientHelloTotal} bytes</div></div>`;
             }
             
 
@@ -365,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="result-line">Signature: ${sigP ? sigSize + ' bytes' : '<em>(missing)</em>'}</div>
                 ${useOcsp ? `<div class="result-line">OCSP stapling: ${ocspBytes} bytes</div>` : ''}
                 ${useSct ? `<div class="result-line">SCT (${sctCount}): ${sctBytes} bytes</div>` : ''}
-                <div class="result-line"><b>Server Hello Size: ${serverHelloTotal} bytes</b></div>
+                <div class="result-line">Server Hello Size: ${serverHelloTotal} bytes</div>
             </div>`;
 
             // --- Total ---
